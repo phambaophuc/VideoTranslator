@@ -5,6 +5,7 @@ import { TranscriptionService } from './transcription.service';
 import { TranscriptionProcessor } from './transcription.processor';
 import { MediaModule } from '../media/media.module';
 import { SubtitleModule } from '../subtitle/subtitle.module';
+import { TranslationModule } from '../translation/translation.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SubtitleModule } from '../subtitle/subtitle.module';
 
     MediaModule,
     SubtitleModule,
+    TranslationModule,
   ],
 
   providers: [TranscriptionService, TranscriptionProcessor],

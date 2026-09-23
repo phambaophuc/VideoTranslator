@@ -7,6 +7,7 @@ import { VideosModule } from './videos/videos.module';
 import { TranscriptionModule } from './transcription/transcription.module';
 import { MediaModule } from './media/media.module';
 import { SubtitleModule } from './subtitle/subtitle.module';
+import { TranslationModule } from './translation/translation.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SubtitleModule } from './subtitle/subtitle.module';
     TranscriptionModule,
     MediaModule,
     SubtitleModule,
+    TranslationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

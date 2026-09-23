@@ -10,6 +10,10 @@ export interface WhisperSegment {
   end: number;
   text: string;
   words?: WhisperWord[];
+
+  avg_logprob?: number;
+  no_speech_prob?: number;
+  compression_ratio?: number;
 }
 
 export interface WhisperTranscription {

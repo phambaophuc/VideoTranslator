@@ -13,7 +13,7 @@ export class TranscriptionService {
     });
   }
 
-  async transcribe(audioPath: string) {
+  async transcribe(audioPath: string): Promise<WhisperTranscription> {
     try {
       const result = await this.groq.audio.transcriptions.create({
         file: createReadStream(audioPath),

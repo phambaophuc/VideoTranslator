@@ -39,7 +39,6 @@ export class TranscriptionProcessor extends WorkerHost {
 
     const audioPath = join(audioDir, `${videoId}.wav`);
     const transcriptPath = join(transcriptDir, `${videoId}.json`);
-    const originalSubtitlePath = join(subtitleDir, `${videoId}.original.srt`);
     const vietnameseSubtitlePath = join(subtitleDir, `${videoId}.vi.srt`);
 
     // --------------------------------
@@ -75,13 +74,7 @@ export class TranscriptionProcessor extends WorkerHost {
     );
 
     // --------------------------------
-    // 5. Original SRT
-    // --------------------------------
-    const originalSrt = this.subtitleService.generateSrt(subtitles);
-    await writeFile(originalSubtitlePath, originalSrt, 'utf8');
-
-    // --------------------------------
-    // 6. Translate to Vietnamese
+    // 5. Translate to Vietnamese
     // --------------------------------
     console.log(`[${videoId}] Translating to Vietnamese...`);
     await job.updateProgress(70);
@@ -89,13 +82,13 @@ export class TranscriptionProcessor extends WorkerHost {
       await this.translationService.translateBatch(subtitles);
 
     // --------------------------------
-    // 7. Vietnamese SRT
+    // 6. Vietnamese SRT
     // --------------------------------
     const vietnameseSrt = this.subtitleService.generateSrt(translatedSubtitles);
     await writeFile(vietnameseSubtitlePath, vietnameseSrt, 'utf8');
 
     // --------------------------------
-    // 8. Burn Vietnamese subtitles
+    // 7. Burn Vietnamese subtitles
     // --------------------------------
     console.log(`[${videoId}] Rendering translated video...`);
     await job.updateProgress(85);
@@ -121,7 +114,6 @@ export class TranscriptionProcessor extends WorkerHost {
     return {
       videoId,
       transcriptPath,
-      originalSubtitlePath,
       vietnameseSubtitlePath,
       translatedVideoPath,
       subtitleCount: subtitles.length,

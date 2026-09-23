@@ -6,6 +6,7 @@ import { MediaService } from '../media/media.service';
 import { TranscriptionService } from './transcription.service';
 import { SubtitleService } from '../subtitle/subtitle.service';
 import { TranslationService } from '../translation/translation.service';
+import { VideoRenderService } from '../video-render/video-render.service';
 
 @Processor('transcription')
 export class TranscriptionProcessor extends WorkerHost {
@@ -14,6 +15,7 @@ export class TranscriptionProcessor extends WorkerHost {
     private readonly transcriptionService: TranscriptionService,
     private readonly subtitleService: SubtitleService,
     private readonly translationService: TranslationService,
+    private readonly videoRenderService: VideoRenderService,
   ) {
     super();
   }
@@ -93,6 +95,24 @@ export class TranscriptionProcessor extends WorkerHost {
     await writeFile(vietnameseSubtitlePath, vietnameseSrt, 'utf8');
 
     // --------------------------------
+    // 8. Burn Vietnamese subtitles
+    // --------------------------------
+    console.log(`[${videoId}] Rendering translated video...`);
+    await job.updateProgress(85);
+
+    const outputDir = join(process.cwd(), 'storage/videos');
+    await mkdir(outputDir, {
+      recursive: true,
+    });
+
+    const translatedVideoPath = join(outputDir, `${videoId}.vi.mp4`);
+    await this.videoRenderService.burnSubtitle(
+      filePath,
+      vietnameseSubtitlePath,
+      translatedVideoPath,
+    );
+
+    // --------------------------------
     // Done
     // --------------------------------
     await job.updateProgress(100);
@@ -103,6 +123,7 @@ export class TranscriptionProcessor extends WorkerHost {
       transcriptPath,
       originalSubtitlePath,
       vietnameseSubtitlePath,
+      translatedVideoPath,
       subtitleCount: subtitles.length,
       status: 'completed',
     };

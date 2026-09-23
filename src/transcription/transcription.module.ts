@@ -6,6 +6,7 @@ import { TranscriptionProcessor } from './transcription.processor';
 import { MediaModule } from '../media/media.module';
 import { SubtitleModule } from '../subtitle/subtitle.module';
 import { TranslationModule } from '../translation/translation.module';
+import { VideoRenderModule } from '../video-render/video-render.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TranslationModule } from '../translation/translation.module';
     MediaModule,
     SubtitleModule,
     TranslationModule,
+    VideoRenderModule,
   ],
 
   providers: [TranscriptionService, TranscriptionProcessor],

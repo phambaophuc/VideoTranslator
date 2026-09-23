@@ -1,0 +1,235 @@
+{
+  "task": "transcribe",
+  "language": "English",
+  "duration": 11.935062016,
+  "text": " It's late now. Are you still up? What are you thinking or worrying about? Do you still remember your dream? Is it getting closer or further?",
+  "words": [
+    {
+      "word": "It's",
+      "start": 0.18,
+      "end": 0.4
+    },
+    {
+      "word": "late",
+      "start": 0.4,
+      "end": 0.7
+    },
+    {
+      "word": "now.",
+      "start": 0.7,
+      "end": 1.76
+    },
+    {
+      "word": "Are",
+      "start": 1.76,
+      "end": 1.78
+    },
+    {
+      "word": "you",
+      "start": 1.78,
+      "end": 1.92
+    },
+    {
+      "word": "still",
+      "start": 1.92,
+      "end": 2.24
+    },
+    {
+      "word": "up?",
+      "start": 2.24,
+      "end": 3
+    },
+    {
+      "word": "What",
+      "start": 3.6,
+      "end": 3.8
+    },
+    {
+      "word": "are",
+      "start": 3.8,
+      "end": 3.94
+    },
+    {
+      "word": "you",
+      "start": 3.94,
+      "end": 4.02
+    },
+    {
+      "word": "thinking",
+      "start": 4.02,
+      "end": 4.5
+    },
+    {
+      "word": "or",
+      "start": 4.5,
+      "end": 5.08
+    },
+    {
+      "word": "worrying",
+      "start": 5.08,
+      "end": 5.48
+    },
+    {
+      "word": "about?",
+      "start": 5.48,
+      "end": 5.9
+    },
+    {
+      "word": "Do",
+      "start": 6.78,
+      "end": 6.9
+    },
+    {
+      "word": "you",
+      "start": 6.9,
+      "end": 7.02
+    },
+    {
+      "word": "still",
+      "start": 7.02,
+      "end": 7.28
+    },
+    {
+      "word": "remember",
+      "start": 7.28,
+      "end": 7.7
+    },
+    {
+      "word": "your",
+      "start": 7.7,
+      "end": 7.86
+    },
+    {
+      "word": "dream?",
+      "start": 7.86,
+      "end": 8.24
+    },
+    {
+      "word": "Is",
+      "start": 9,
+      "end": 9.16
+    },
+    {
+      "word": "it",
+      "start": 9.16,
+      "end": 9.3
+    },
+    {
+      "word": "getting",
+      "start": 9.3,
+      "end": 9.6
+    },
+    {
+      "word": "closer",
+      "start": 9.6,
+      "end": 10.1
+    },
+    {
+      "word": "or",
+      "start": 10.1,
+      "end": 10.8
+    },
+    {
+      "word": "further?",
+      "start": 10.8,
+      "end": 11.16
+    }
+  ],
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0,
+      "end": 2.52,
+      "text": " It's late now. Are you still up?",
+      "tokens": [
+        50365,
+        467,
+        311,
+        3469,
+        586,
+        13,
+        2014,
+        291,
+        920,
+        493,
+        30,
+        50491
+      ],
+      "temperature": 0,
+      "avg_logprob": -0.22894818,
+      "compression_ratio": 1.2477876,
+      "no_speech_prob": 0.05380249
+    },
+    {
+      "id": 1,
+      "seek": 0,
+      "start": 3.34,
+      "end": 5.98,
+      "text": " What are you thinking or worrying about?",
+      "tokens": [
+        50532,
+        708,
+        366,
+        291,
+        1953,
+        420,
+        18788,
+        466,
+        30,
+        50664
+      ],
+      "temperature": 0,
+      "avg_logprob": -0.22894818,
+      "compression_ratio": 1.2477876,
+      "no_speech_prob": 0.05380249
+    },
+    {
+      "id": 2,
+      "seek": 0,
+      "start": 6.74,
+      "end": 8.26,
+      "text": " Do you still remember your dream?",
+      "tokens": [
+        50702,
+        1144,
+        291,
+        920,
+        1604,
+        428,
+        3055,
+        30,
+        50778
+      ],
+      "temperature": 0,
+      "avg_logprob": -0.22894818,
+      "compression_ratio": 1.2477876,
+      "no_speech_prob": 0.05380249
+    },
+    {
+      "id": 3,
+      "seek": 0,
+      "start": 8.92,
+      "end": 11.179999,
+      "text": " Is it getting closer or further?",
+      "tokens": [
+        50811,
+        1119,
+        309,
+        1242,
+        4966,
+        420,
+        3052,
+        30,
+        50924
+      ],
+      "temperature": 0,
+      "avg_logprob": -0.22894818,
+      "compression_ratio": 1.2477876,
+      "no_speech_prob": 0.05380249
+    }
+  ],
+  "x_groq": {
+    "id": "req_01m36nxcfye4c8ejrbsw448q8y"
+  }
+}

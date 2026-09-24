@@ -38,7 +38,6 @@ export class TranslationService {
       results.push(...translatedBatch);
     }
 
-    // Final validation
     this.validateTranslations(subtitles, results);
 
     console.log(
@@ -210,8 +209,6 @@ export class TranslationService {
       const translated = translations.get(subtitle.sequence);
 
       if (!translated) {
-        // QUAN TRỌNG:
-        // Không fallback về subtitle tiếng Anh.
         return {
           ...subtitle,
           text: '',

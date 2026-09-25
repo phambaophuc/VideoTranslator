@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   Controller,
+  Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -24,5 +26,10 @@ export class VideosController {
     }
 
     return this.videosService.create(file);
+  }
+
+  @Get(':videoId/status')
+  async getStatus(@Param('videoId') videoId: string) {
+    return this.videosService.getStatus(videoId);
   }
 }

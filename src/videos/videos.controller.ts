@@ -4,11 +4,13 @@ import {
   Get,
   Param,
   Post,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { VideosService } from './videos.service';
+import { createReadStream } from 'fs';
 
 @Controller('videos')
 export class VideosController {
@@ -28,8 +30,24 @@ export class VideosController {
     return this.videosService.create(file);
   }
 
+  @Get(':videoId')
+  async getVideo(@Param('videoId') videoId: string) {
+    return this.videosService.getVideo(videoId);
+  }
+
   @Get(':videoId/status')
   async getStatus(@Param('videoId') videoId: string) {
     return this.videosService.getStatus(videoId);
+  }
+
+  @Get(':videoId/video')
+  getVideoFile(@Param('videoId') videoId: string): StreamableFile {
+    const videoPath = this.videosService.getVideoFile(videoId);
+    const stream = createReadStream(videoPath);
+
+    return new StreamableFile(stream, {
+      type: 'video/mp4',
+      disposition: 'inline',
+    });
   }
 }

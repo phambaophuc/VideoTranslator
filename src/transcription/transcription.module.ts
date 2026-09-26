@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
-import { TranscriptionService } from './transcription.service';
-import { TranscriptionProcessor } from './transcription.processor';
+import { Module } from '@nestjs/common';
+
 import { MediaModule } from '../media/media.module';
 import { SubtitleModule } from '../subtitle/subtitle.module';
 import { TranslationModule } from '../translation/translation.module';
 import { VideoRenderModule } from '../video-render/video-render.module';
+import { TranscriptionProcessor } from './transcription.processor';
+import { TranscriptionService } from './transcription.service';
 
 @Module({
   imports: [

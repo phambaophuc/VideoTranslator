@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { WhisperSegment } from '../transcription/transcription.types';
 import { SubtitleOptions, SubtitleSegment } from './subtitle.types';
 
@@ -158,9 +159,7 @@ export class SubtitleService {
       .flatMap((segment) => {
         const tokens = this.toTokens(segment);
         if (tokens.length === 0) return [];
-        return this.splitAtHardBreaks(tokens, cfg).map((group) =>
-          this.toDraft(group),
-        );
+        return this.splitAtHardBreaks(tokens, cfg).map((group) => this.toDraft(group));
       })
       .filter((draft) => draft.text.length > 0 && draft.end >= draft.start);
 
@@ -233,9 +232,7 @@ export class SubtitleService {
 
     const parts = raw
       .split(' ')
-      .flatMap((part) =>
-        CJK_RE.test(part) ? (part.match(CJK_SPLIT_RE) ?? [part]) : [part],
-      );
+      .flatMap((part) => (CJK_RE.test(part) ? (part.match(CJK_SPLIT_RE) ?? [part]) : [part]));
 
     const weight = (part: string) => textLength(part) + 1;
     const totalWeight = parts.reduce((sum, part) => sum + weight(part), 0);
@@ -257,8 +254,7 @@ export class SubtitleService {
     tokens.forEach((token, index) => {
       current.push(token);
       const next = tokens[index + 1];
-      const longPause =
-        next !== undefined && next.start - token.end > cfg.pauseSplit;
+      const longPause = next !== undefined && next.start - token.end > cfg.pauseSplit;
 
       if (isSentenceEnd(token.text) || longPause) {
         groups.push(current);
@@ -278,9 +274,7 @@ export class SubtitleService {
     let bestScore = Infinity;
 
     for (let i = 1; i < tokens.length; i++) {
-      const left = textLength(
-        joinTokens(tokens.slice(0, i).map((t) => t.text)),
-      );
+      const left = textLength(joinTokens(tokens.slice(0, i).map((t) => t.text)));
       const right = textLength(joinTokens(tokens.slice(i).map((t) => t.text)));
 
       let score = Math.abs(left - right) / Math.max(left + right, 1);
@@ -333,13 +327,9 @@ export class SubtitleService {
       const prev = out[i - 1];
       const next = out[i + 1];
       const gapPrev =
-        prev && this.canMerge(prev, current, cfg)
-          ? current.start - prev.end
-          : Infinity;
+        prev && this.canMerge(prev, current, cfg) ? current.start - prev.end : Infinity;
       const gapNext =
-        next && this.canMerge(current, next, cfg)
-          ? next.start - current.end
-          : Infinity;
+        next && this.canMerge(current, next, cfg) ? next.start - current.end : Infinity;
 
       if (gapPrev === Infinity && gapNext === Infinity) {
         i++;
@@ -378,10 +368,7 @@ export class SubtitleService {
       const nextStart = drafts[index + 1]?.start ?? Infinity;
       const limit = nextStart - cfg.minGap;
 
-      const needed = Math.max(
-        cfg.minDuration,
-        textLength(draft.text) / cfg.maxCps,
-      );
+      const needed = Math.max(cfg.minDuration, textLength(draft.text) / cfg.maxCps);
       const wanted = Math.max(draft.end, start + needed);
       const end = Math.max(Math.min(wanted, limit), start + MIN_DISPLAY);
 
@@ -402,11 +389,7 @@ export class SubtitleService {
     const tokens = byChar ? Array.from(text) : text.split(' ');
     const sep = byChar ? '' : ' ';
 
-    for (
-      let width = Math.ceil(total / needed);
-      width <= cfg.maxCharsPerLine;
-      width++
-    ) {
+    for (let width = Math.ceil(total / needed); width <= cfg.maxCharsPerLine; width++) {
       const lines = greedyWrap(tokens, width, sep);
       if (
         lines.length <= cfg.maxLines &&

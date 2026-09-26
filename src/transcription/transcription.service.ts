@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import Groq from 'groq-sdk';
 import { createReadStream } from 'fs';
+import Groq from 'groq-sdk';
+
 import { WhisperTranscription } from './transcription.types';
 
 @Injectable()

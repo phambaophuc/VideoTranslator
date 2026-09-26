@@ -1,12 +1,13 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import { join } from 'path';
 import { mkdir, writeFile } from 'fs/promises';
+import { join } from 'path';
+
 import { MediaService } from '../media/media.service';
-import { TranscriptionService } from './transcription.service';
 import { SubtitleService } from '../subtitle/subtitle.service';
 import { TranslationService } from '../translation/translation.service';
 import { VideoRenderService } from '../video-render/video-render.service';
+import { TranscriptionService } from './transcription.service';
 
 @Processor('transcription')
 export class TranscriptionProcessor extends WorkerHost {
@@ -50,21 +51,14 @@ export class TranscriptionProcessor extends WorkerHost {
     const transcript = await this.transcriptionService.transcribe(audioPath);
 
     await job.updateProgress(50);
-    await writeFile(
-      transcriptPath,
-      JSON.stringify(transcript, null, 2),
-      'utf8',
-    );
+    await writeFile(transcriptPath, JSON.stringify(transcript, null, 2), 'utf8');
 
     console.log(`[${videoId}] Creating translation units...`);
-    const translationUnits = this.subtitleService.createTranslationUnits(
-      transcript.segments,
-    );
+    const translationUnits = this.subtitleService.createTranslationUnits(transcript.segments);
 
     console.log(`[${videoId}] Translating to Vietnamese...`);
     await job.updateProgress(70);
-    const translatedUnits =
-      await this.translationService.translateBatch(translationUnits);
+    const translatedUnits = await this.translationService.translateBatch(translationUnits);
 
     const translatedSubtitles = this.subtitleService.finalizeTranslatedSegments(
       translationUnits,

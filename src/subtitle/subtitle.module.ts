@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { SubtitleService } from './subtitle.service';
 
 @Module({

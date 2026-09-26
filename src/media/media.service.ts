@@ -30,10 +30,7 @@ export class MediaService {
       return outputPath;
     } catch (error) {
       console.error('FFmpeg error:', error);
-
-      throw new InternalServerErrorException(
-        'Failed to extract audio from video',
-      );
+      throw new InternalServerErrorException('Failed to extract audio from video');
     }
   }
 }

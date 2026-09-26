@@ -9,8 +9,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { VideosService } from './videos.service';
 import { createReadStream } from 'fs';
+
+import { VideosService } from './videos.service';
 
 @Controller('videos')
 export class VideosController {

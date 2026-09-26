@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -11,4 +12,6 @@ async function bootstrap() {
   console.log(`Server running on http://localhost:${process.env.PORT ?? 3000}`);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('Failed to start server:', error);
+});

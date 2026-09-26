@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { randomUUID } from 'crypto';
-import { VideoJobStore } from './video-job.store';
-import { join } from 'path';
 import { existsSync } from 'fs';
+import { join } from 'path';
+
+import { VideoJobStore } from './video-job.store';
 
 @Injectable()
 export class VideosService {
@@ -97,12 +98,7 @@ export class VideosService {
   }
 
   getVideoFile(videoId: string) {
-    const videoPath = join(
-      process.cwd(),
-      'storage',
-      'videos',
-      `${videoId}.vi.mp4`,
-    );
+    const videoPath = join(process.cwd(), 'storage', 'videos', `${videoId}.vi.mp4`);
 
     if (!existsSync(videoPath)) {
       throw new NotFoundException('Translated video not found');

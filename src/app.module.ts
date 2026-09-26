@@ -1,13 +1,14 @@
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-import { BullModule } from '@nestjs/bullmq';
-import { VideosModule } from './videos/videos.module';
-import { TranscriptionModule } from './transcription/transcription.module';
 import { MediaModule } from './media/media.module';
 import { SubtitleModule } from './subtitle/subtitle.module';
+import { TranscriptionModule } from './transcription/transcription.module';
 import { TranslationModule } from './translation/translation.module';
+import { VideosModule } from './videos/videos.module';
 
 @Module({
   imports: [

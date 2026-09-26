@@ -1,23 +1,16 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { execFile } from 'child_process';
-import { promisify } from 'util';
 import { relative } from 'path';
+import { promisify } from 'util';
 
 const execFileAsync = promisify(execFile);
 
 @Injectable()
 export class VideoRenderService {
-  async burnSubtitle(
-    videoPath: string,
-    subtitlePath: string,
-    outputPath: string,
-  ): Promise<string> {
+  async burnSubtitle(videoPath: string, subtitlePath: string, outputPath: string): Promise<string> {
     try {
       const relativeSubtitlePath = relative(process.cwd(), subtitlePath);
-
-      const subtitleFilter = `subtitles='${this.escapeSubtitlePath(
-        relativeSubtitlePath,
-      )}'`;
+      const subtitleFilter = `subtitles='${this.escapeSubtitlePath(relativeSubtitlePath)}'`;
 
       console.log('Subtitle filter:', subtitleFilter);
 
@@ -54,17 +47,11 @@ export class VideoRenderService {
       return outputPath;
     } catch (error) {
       console.error('Video rendering error:', error);
-
-      throw new InternalServerErrorException(
-        'Failed to burn subtitles into video',
-      );
+      throw new InternalServerErrorException('Failed to burn subtitles into video');
     }
   }
 
   private escapeSubtitlePath(filePath: string): string {
-    return filePath
-      .replace(/\\/g, '/')
-      .replace(/:/g, '\\:')
-      .replace(/'/g, "\\'");
+    return filePath.replace(/\\/g, '/').replace(/:/g, '\\:').replace(/'/g, "\\'");
   }
 }

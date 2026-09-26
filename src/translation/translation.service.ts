@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import Groq from 'groq-sdk';
+
 import { SubtitleSegment } from '../subtitle/subtitle.types';
 
 @Injectable()
@@ -15,9 +16,7 @@ export class TranslationService {
     });
   }
 
-  async translateBatch(
-    subtitles: SubtitleSegment[],
-  ): Promise<SubtitleSegment[]> {
+  async translateBatch(subtitles: SubtitleSegment[]): Promise<SubtitleSegment[]> {
     if (subtitles.length === 0) {
       return [];
     }
@@ -40,16 +39,12 @@ export class TranslationService {
 
     this.validateTranslations(subtitles, results);
 
-    console.log(
-      `[Translation] Completed ${results.length}/${subtitles.length} subtitles`,
-    );
+    console.log(`[Translation] Completed ${results.length}/${subtitles.length} subtitles`);
 
     return results;
   }
 
-  private async translateWithRetry(
-    subtitles: SubtitleSegment[],
-  ): Promise<SubtitleSegment[]> {
+  private async translateWithRetry(subtitles: SubtitleSegment[]): Promise<SubtitleSegment[]> {
     let lastResult: SubtitleSegment[] = [];
 
     for (let attempt = 1; attempt <= this.MAX_RETRIES + 1; attempt++) {
@@ -97,12 +92,8 @@ export class TranslationService {
     );
   }
 
-  private async translateOneBatch(
-    subtitles: SubtitleSegment[],
-  ): Promise<SubtitleSegment[]> {
-    const input = subtitles
-      .map((subtitle) => `[${subtitle.sequence}] ${subtitle.text}`)
-      .join('\n');
+  private async translateOneBatch(subtitles: SubtitleSegment[]): Promise<SubtitleSegment[]> {
+    const input = subtitles.map((subtitle) => `[${subtitle.sequence}] ${subtitle.text}`).join('\n');
 
     try {
       const result = await this.groq.chat.completions.create({
@@ -175,10 +166,7 @@ export class TranslationService {
       return this.parseTranslations(subtitles, content);
     } catch (error) {
       console.error('[Translation] Groq error:', error);
-
-      throw new InternalServerErrorException(
-        'Failed to translate subtitle batch',
-      );
+      throw new InternalServerErrorException('Failed to translate subtitle batch');
     }
   }
 
@@ -226,15 +214,10 @@ export class TranslationService {
     expected: SubtitleSegment[],
     translated: SubtitleSegment[],
   ): SubtitleSegment[] {
-    return translated.filter(
-      (subtitle) => !subtitle.text || subtitle.text.trim().length === 0,
-    );
+    return translated.filter((subtitle) => !subtitle.text || subtitle.text.trim().length === 0);
   }
 
-  private validateTranslations(
-    original: SubtitleSegment[],
-    translated: SubtitleSegment[],
-  ): void {
+  private validateTranslations(original: SubtitleSegment[], translated: SubtitleSegment[]): void {
     if (original.length !== translated.length) {
       throw new Error(
         `Translation count mismatch. Expected ${original.length}, got ${translated.length}`,

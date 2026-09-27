@@ -42,22 +42,34 @@ export class TranscriptionProcessor extends WorkerHost {
     const transcriptPath = join(transcriptDir, `${videoId}.json`);
     const vietnameseSubtitlePath = join(subtitleDir, `${videoId}.vi.srt`);
 
-    console.log(`[${videoId}] Extracting audio...`);
-    await job.updateProgress(10);
+    await job.updateProgress({
+      progress: 10,
+      step: 'extracting',
+      message: 'Extracting audio...',
+    });
     await this.mediaService.extractAudio(filePath, audioPath);
 
-    console.log(`[${videoId}] Transcribing...`);
-    await job.updateProgress(30);
+    await job.updateProgress({
+      progress: 30,
+      step: 'transcribing',
+      message: 'Transcribing audio...',
+    });
     const transcript = await this.transcriptionService.transcribe(audioPath);
 
-    await job.updateProgress(50);
+    await job.updateProgress({
+      progress: 50,
+      step: 'preparing_subtitles',
+      message: 'Preparing subtitles...',
+    });
     await writeFile(transcriptPath, JSON.stringify(transcript, null, 2), 'utf8');
 
-    console.log(`[${videoId}] Creating translation units...`);
     const translationUnits = this.subtitleService.createTranslationUnits(transcript.segments);
 
-    console.log(`[${videoId}] Translating to Vietnamese...`);
-    await job.updateProgress(70);
+    await job.updateProgress({
+      progress: 70,
+      step: 'translating',
+      message: 'Translating subtitles...',
+    });
     const translatedUnits = await this.translationService.translateBatch(translationUnits);
 
     const translatedSubtitles = this.subtitleService.finalizeTranslatedSegments(
@@ -68,8 +80,11 @@ export class TranscriptionProcessor extends WorkerHost {
     const vietnameseSrt = this.subtitleService.generateSrt(translatedSubtitles);
     await writeFile(vietnameseSubtitlePath, vietnameseSrt, 'utf8');
 
-    console.log(`[${videoId}] Rendering translated video...`);
-    await job.updateProgress(85);
+    await job.updateProgress({
+      progress: 85,
+      step: 'rendering',
+      message: 'Rendering translated video...',
+    });
 
     const outputDir = join(process.cwd(), 'storage/videos');
     await mkdir(outputDir, {
@@ -83,7 +98,11 @@ export class TranscriptionProcessor extends WorkerHost {
       translatedVideoPath,
     );
 
-    await job.updateProgress(100);
+    await job.updateProgress({
+      progress: 100,
+      step: 'completed',
+      message: 'Video translation completed.',
+    });
     console.log(`[${videoId}] Video processing completed`);
 
     return {

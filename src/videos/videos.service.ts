@@ -36,22 +36,31 @@ export class VideosService {
   async getStatus(videoId: string) {
     const videoJob = this.videoJobStore.get(videoId);
     if (!videoJob) {
-      throw new NotFoundException('Video not found.');
+      throw new NotFoundException('Video not found');
     }
 
     const job = await this.transcriptionQueue.getJob(videoJob.jobId);
     if (!job) {
-      throw new NotFoundException('Video processing job not found.');
+      throw new NotFoundException('Video processing job not found');
     }
 
     const state = await job.getState();
-    const progress = typeof job.progress === 'number' ? job.progress : 0;
+    const jobProgress = job.progress;
+
+    const progress =
+      typeof jobProgress === 'object' && jobProgress !== null
+        ? jobProgress
+        : {
+            progress: typeof jobProgress === 'number' ? jobProgress : 0,
+            step: state,
+            message: 'Processing video...',
+          };
 
     return {
       videoId,
       jobId: job.id,
       status: state,
-      progress,
+      ...progress,
     };
   }
 

@@ -5,7 +5,8 @@ export type VideoProcessingStep =
   | 'preparing_subtitles'
   | 'translating'
   | 'rendering'
-  | 'completed';
+  | 'completed'
+  | 'failed';
 
 export interface VideoProcessingProgress {
   progress: number;

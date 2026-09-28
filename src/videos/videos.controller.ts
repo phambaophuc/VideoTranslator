@@ -4,18 +4,25 @@ import {
   Get,
   Param,
   Post,
+  Sse,
   StreamableFile,
   UploadedFile,
   UseInterceptors,
+  MessageEvent,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { createReadStream } from 'fs';
 
 import { VideosService } from './videos.service';
+import { VideoProgressService } from './video-progress.service';
+import { concat, map, Observable, of } from 'rxjs';
 
 @Controller('videos')
 export class VideosController {
-  constructor(private readonly videosService: VideosService) {}
+  constructor(
+    private readonly videosService: VideosService,
+    private readonly videoProgressService: VideoProgressService,
+  ) {}
 
   @Post()
   @UseInterceptors(
@@ -50,5 +57,28 @@ export class VideosController {
       type: 'video/mp4',
       disposition: 'inline',
     });
+  }
+
+  @Sse(':videoId/events')
+  events(@Param('videoId') videoId: string): Observable<MessageEvent> {
+    const latest = this.videoProgressService.getLatest(videoId);
+    const stream = this.videoProgressService.getStream(videoId).pipe(
+      map((event) => ({
+        type: 'progress',
+        data: event,
+      })),
+    );
+
+    if (!latest) {
+      return stream;
+    }
+
+    return concat(
+      of({
+        type: 'progress',
+        data: latest,
+      }),
+      stream,
+    );
   }
 }

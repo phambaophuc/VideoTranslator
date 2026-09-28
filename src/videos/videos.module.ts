@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 import { VideoJobStore } from './video-job.store';
 import { VideosController } from './videos.controller';
 import { VideosService } from './videos.service';
+import { VideoProgressService } from './video-progress.service';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { VideosService } from './videos.service';
     }),
   ],
   controllers: [VideosController],
-  providers: [VideosService, VideoJobStore],
-  exports: [VideoJobStore],
+  providers: [VideosService, VideoJobStore, VideoProgressService],
+  exports: [VideoJobStore, VideoProgressService],
 })
 export class VideosModule {}

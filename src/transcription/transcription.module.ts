@@ -2,6 +2,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 
 import { MediaModule } from '../media/media.module';
+import { StorageModule } from '../storage/storage.module';
 import { SubtitleModule } from '../subtitle/subtitle.module';
 import { TranslationModule } from '../translation/translation.module';
 import { VideoRenderModule } from '../video-render/video-render.module';
@@ -20,6 +21,7 @@ import { TranscriptionService } from './transcription.service';
     TranslationModule,
     VideoRenderModule,
     VideosModule,
+    StorageModule,
   ],
 
   providers: [TranscriptionService, TranscriptionProcessor],

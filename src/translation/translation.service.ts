@@ -25,20 +25,12 @@ export class TranslationService {
 
     for (let i = 0; i < subtitles.length; i += this.BATCH_SIZE) {
       const batch = subtitles.slice(i, i + this.BATCH_SIZE);
-
-      console.log(
-        `[Translation] Batch ${
-          Math.floor(i / this.BATCH_SIZE) + 1
-        } - subtitles ${i + 1}-${i + batch.length}/${subtitles.length}`,
-      );
-
       const translatedBatch = await this.translateWithRetry(batch);
 
       results.push(...translatedBatch);
     }
 
     this.validateTranslations(subtitles, results);
-
     console.log(`[Translation] Completed ${results.length}/${subtitles.length} subtitles`);
 
     return results;
@@ -48,15 +40,8 @@ export class TranslationService {
     let lastResult: SubtitleSegment[] = [];
 
     for (let attempt = 1; attempt <= this.MAX_RETRIES + 1; attempt++) {
-      console.log(
-        `[Translation] Attempt ${attempt} for subtitles ${
-          subtitles[0].sequence
-        }-${subtitles[subtitles.length - 1].sequence}`,
-      );
-
       try {
         const translated = await this.translateOneBatch(subtitles);
-
         const missing = this.findMissingTranslations(subtitles, translated);
 
         if (missing.length === 0) {

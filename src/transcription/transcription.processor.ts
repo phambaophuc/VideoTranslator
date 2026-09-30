@@ -4,6 +4,7 @@ import { mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
 
 import { MediaService } from '../media/media.service';
+import { StorageService } from '../storage/storage.service';
 import { SubtitleService } from '../subtitle/subtitle.service';
 import { TranslationService } from '../translation/translation.service';
 import { VideoRenderService } from '../video-render/video-render.service';
@@ -19,6 +20,7 @@ export class TranscriptionProcessor extends WorkerHost {
     private readonly translationService: TranslationService,
     private readonly videoRenderService: VideoRenderService,
     private readonly videoProgressService: VideoProgressService,
+    private readonly storageService: StorageService,
   ) {
     super();
   }
@@ -33,17 +35,12 @@ export class TranscriptionProcessor extends WorkerHost {
     try {
       console.log(`[${videoId}] Starting video processing`);
 
-      const audioDir = join(process.cwd(), 'storage/audio');
-      const transcriptDir = join(process.cwd(), 'storage/transcripts');
-      const subtitleDir = join(process.cwd(), 'storage/subtitles');
+      await this.storageService.ensureDirectories();
 
-      await mkdir(audioDir, { recursive: true });
-      await mkdir(transcriptDir, { recursive: true });
-      await mkdir(subtitleDir, { recursive: true });
-
-      const audioPath = join(audioDir, `${videoId}.wav`);
-      const transcriptPath = join(transcriptDir, `${videoId}.json`);
-      const vietnameseSubtitlePath = join(subtitleDir, `${videoId}.vi.srt`);
+      const audioPath = this.storageService.getAudioPath(videoId);
+      const transcriptPath = this.storageService.getTranscriptPath(videoId);
+      const vietnameseSubtitlePath = this.storageService.getVietnameseSubtitlePath(videoId);
+      const translatedVideoPath = this.storageService.getVideoPath(videoId);
 
       const extractingProgress = {
         progress: 10,
@@ -102,12 +99,12 @@ export class TranscriptionProcessor extends WorkerHost {
         recursive: true,
       });
 
-      const translatedVideoPath = join(outputDir, `${videoId}.vi.mp4`);
       await this.videoRenderService.burnSubtitle(
         filePath,
         vietnameseSubtitlePath,
         translatedVideoPath,
       );
+      await this.storageService.cleanupVideoProcessingFiles(videoId);
 
       const completedProgress = {
         progress: 100,
@@ -129,6 +126,8 @@ export class TranscriptionProcessor extends WorkerHost {
         status: 'completed',
       };
     } catch (error) {
+      await this.storageService.cleanupVideoProcessingFiles(videoId);
+
       const failedProgress = {
         progress: 0,
         step: 'failed' as const,

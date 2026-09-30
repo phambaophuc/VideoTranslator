@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MediaModule } from './media/media.module';
+import { StorageModule } from './storage/storage.module';
 import { SubtitleModule } from './subtitle/subtitle.module';
 import { TranscriptionModule } from './transcription/transcription.module';
 import { TranslationModule } from './translation/translation.module';
@@ -29,6 +30,7 @@ import { VideosModule } from './videos/videos.module';
     MediaModule,
     SubtitleModule,
     TranslationModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

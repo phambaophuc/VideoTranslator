@@ -69,12 +69,4 @@ export class StorageService {
       console.error(`[Storage] Failed to delete: ${filePath}`, error);
     }
   }
-
-  async cleanupVideoProcessingFiles(videoId: string): Promise<void> {
-    await this.cleanupTemporaryFiles([
-      this.getAudioPath(videoId),
-      this.getTranscriptPath(videoId),
-      this.getVietnameseSubtitlePath(videoId),
-    ]);
-  }
 }

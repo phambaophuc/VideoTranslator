@@ -3,8 +3,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { rename } from 'fs/promises';
+import { extname } from 'path';
 
+import { StorageService } from '../storage/storage.service';
 import { VideoJobStore } from './video-job.store';
 
 @Injectable()
@@ -13,14 +15,19 @@ export class VideosService {
     @InjectQueue('transcription')
     private readonly transcriptionQueue: Queue,
     private readonly videoJobStore: VideoJobStore,
+    private readonly storageService: StorageService,
   ) {}
 
   async create(file: Express.Multer.File) {
     const videoId = randomUUID();
+    const extension = extname(file.originalname) || '.mp4';
+    const uploadPath = this.storageService.getUploadPath(videoId, extension);
+
+    await rename(file.path, uploadPath);
 
     const job = await this.transcriptionQueue.add('transcribe-video', {
       videoId,
-      filePath: file.path,
+      filePath: uploadPath,
       originalName: file.originalname,
     });
 
@@ -107,7 +114,7 @@ export class VideosService {
   }
 
   getVideoFile(videoId: string) {
-    const videoPath = join(process.cwd(), 'storage', 'videos', `${videoId}.vi.mp4`);
+    const videoPath = this.storageService.getVideoPath(videoId);
 
     if (!existsSync(videoPath)) {
       throw new NotFoundException('Translated video not found');

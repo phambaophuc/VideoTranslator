@@ -31,16 +31,15 @@ export class TranscriptionProcessor extends WorkerHost {
     }
 
     const { videoId, filePath } = job.data;
+    await this.storageService.ensureDirectories();
+
+    const audioPath = this.storageService.getAudioPath(videoId);
+    const transcriptPath = this.storageService.getTranscriptPath(videoId);
+    const vietnameseSubtitlePath = this.storageService.getVietnameseSubtitlePath(videoId);
+    const translatedVideoPath = this.storageService.getVideoPath(videoId);
 
     try {
       console.log(`[${videoId}] Starting video processing`);
-
-      await this.storageService.ensureDirectories();
-
-      const audioPath = this.storageService.getAudioPath(videoId);
-      const transcriptPath = this.storageService.getTranscriptPath(videoId);
-      const vietnameseSubtitlePath = this.storageService.getVietnameseSubtitlePath(videoId);
-      const translatedVideoPath = this.storageService.getVideoPath(videoId);
 
       const extractingProgress = {
         progress: 10,
@@ -104,7 +103,12 @@ export class TranscriptionProcessor extends WorkerHost {
         vietnameseSubtitlePath,
         translatedVideoPath,
       );
-      await this.storageService.cleanupVideoProcessingFiles(videoId);
+      await this.storageService.cleanupTemporaryFiles([
+        filePath,
+        audioPath,
+        transcriptPath,
+        vietnameseSubtitlePath,
+      ]);
 
       const completedProgress = {
         progress: 100,
@@ -126,7 +130,12 @@ export class TranscriptionProcessor extends WorkerHost {
         status: 'completed',
       };
     } catch (error) {
-      await this.storageService.cleanupVideoProcessingFiles(videoId);
+      await this.storageService.cleanupTemporaryFiles([
+        filePath,
+        audioPath,
+        transcriptPath,
+        vietnameseSubtitlePath,
+      ]);
 
       const failedProgress = {
         progress: 0,

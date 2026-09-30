@@ -7,8 +7,8 @@ import { MediaService } from '../media/media.service';
 import { SubtitleService } from '../subtitle/subtitle.service';
 import { TranslationService } from '../translation/translation.service';
 import { VideoRenderService } from '../video-render/video-render.service';
-import { TranscriptionService } from './transcription.service';
 import { VideoProgressService } from '../videos/video-progress.service';
+import { TranscriptionService } from './transcription.service';
 
 @Processor('transcription')
 export class TranscriptionProcessor extends WorkerHost {
@@ -117,6 +117,8 @@ export class TranscriptionProcessor extends WorkerHost {
       await job.updateProgress(completedProgress);
       this.videoProgressService.publish(videoId, completedProgress);
       this.videoProgressService.complete(videoId);
+
+      console.log(`[${videoId}] Completed!`);
 
       return {
         videoId,

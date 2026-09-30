@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { VideoProcessingProgress } from './video-processing.types';
 import { Observable, Subject } from 'rxjs';
+
+import { VideoProcessingProgress } from './video-processing.types';
 
 export interface VideoProgressEvent extends VideoProcessingProgress {
   videoId: string;

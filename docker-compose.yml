@@ -1,11 +1,31 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: video-translator-app
+    ports:
+      - '3000:3000'
+    environment:
+      PORT: 3000
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      GROQ_API_KEY: ${GROQ_API_KEY}
+    depends_on:
+      - redis
+    volumes:
+      - ./storage:/app/storage
+    restart: unless-stopped
+
   redis:
     image: redis:7-alpine
     container_name: video-translator-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
     restart: unless-stopped
-  
+
 #   postgres:
 #     image: postgres:16-alpine
 #     container_name: video-translator-postgres
@@ -19,5 +39,5 @@ services:
 #       - postgres_data:/var/lib/postgresql/data
 #     restart: unless-stopped
 
-# volumes:
-#   postgres_data:
+volumes:
+  redis_data:

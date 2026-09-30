@@ -1,6 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { execFile } from 'child_process';
-import { relative } from 'path';
 import { promisify } from 'util';
 
 const execFileAsync = promisify(execFile);
@@ -9,10 +8,7 @@ const execFileAsync = promisify(execFile);
 export class VideoRenderService {
   async burnSubtitle(videoPath: string, subtitlePath: string, outputPath: string): Promise<string> {
     try {
-      const relativeSubtitlePath = relative(process.cwd(), subtitlePath);
-      const subtitleFilter = `subtitles='${this.escapeSubtitlePath(relativeSubtitlePath)}'`;
-
-      console.log('Subtitle filter:', subtitleFilter);
+      const subtitleFilter = `subtitles='${this.escapeSubtitlePath(subtitlePath)}'`;
 
       await execFileAsync(
         'ffmpeg',

@@ -1,21 +1,23 @@
+import 'multer';
+
 import {
   BadRequestException,
   Controller,
   Get,
+  MessageEvent,
   Param,
   Post,
   Sse,
   StreamableFile,
   UploadedFile,
   UseInterceptors,
-  MessageEvent,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { createReadStream } from 'fs';
-
-import { VideosService } from './videos.service';
-import { VideoProgressService } from './video-progress.service';
 import { concat, map, Observable, of } from 'rxjs';
+
+import { VideoProgressService } from './video-progress.service';
+import { VideosService } from './videos.service';
 
 @Controller('videos')
 export class VideosController {

@@ -108,7 +108,7 @@ export class TranscriptionProcessor extends WorkerHost {
         filePath,
         audioPath,
         transcriptPath,
-        vietnameseSubtitlePath,
+        // vietnameseSubtitlePath,
       ]);
 
       const completedProgress = {

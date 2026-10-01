@@ -37,44 +37,36 @@ export class TranslationService {
   }
 
   private async translateWithRetry(subtitles: SubtitleSegment[]): Promise<SubtitleSegment[]> {
-    let lastResult: SubtitleSegment[] = [];
+    const done = new Map<number, string>();
+    let pending = subtitles;
 
-    for (let attempt = 1; attempt <= this.MAX_RETRIES + 1; attempt++) {
+    for (let attempt = 1; attempt <= this.MAX_RETRIES + 1 && pending.length > 0; attempt++) {
       try {
-        const translated = await this.translateOneBatch(subtitles);
-        const missing = this.findMissingTranslations(subtitles, translated);
-
-        if (missing.length === 0) {
-          return translated;
-        }
-
-        console.warn(
-          `[Translation] Missing subtitles:`,
-          missing.map((subtitle) => subtitle.sequence),
-        );
-
-        lastResult = translated;
-
-        if (attempt <= this.MAX_RETRIES) {
-          console.log(`[Translation] Retrying batch...`);
+        const translated = await this.translateOneBatch(pending);
+        for (const item of translated) {
+          if (item.text.trim()) done.set(item.sequence, item.text);
         }
       } catch (error) {
         console.error(`[Translation] Attempt ${attempt} failed:`, error);
+        if (attempt > this.MAX_RETRIES && done.size === 0) throw error;
+      }
 
-        if (attempt > this.MAX_RETRIES) {
-          throw error;
-        }
+      pending = subtitles.filter((s) => !done.has(s.sequence));
+      if (pending.length > 0 && attempt <= this.MAX_RETRIES) {
+        console.warn(
+          `[Translation] Missing: ${pending.map((s) => s.sequence).join(', ')}. Retrying...`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt)); // backoff
       }
     }
 
-    throw new Error(
-      `Translation incomplete. Missing subtitles: ${this.findMissingTranslations(
-        subtitles,
-        lastResult,
-      )
-        .map((subtitle) => subtitle.sequence)
-        .join(', ')}`,
-    );
+    if (pending.length > 0) {
+      console.warn(
+        `[Translation] Falling back to original text for: ${pending.map((s) => s.sequence).join(', ')}`,
+      );
+    }
+
+    return subtitles.map((s) => ({ ...s, text: done.get(s.sequence) ?? s.text }));
   }
 
   private async translateOneBatch(subtitles: SubtitleSegment[]): Promise<SubtitleSegment[]> {
@@ -195,10 +187,7 @@ export class TranslationService {
     });
   }
 
-  private findMissingTranslations(
-    expected: SubtitleSegment[],
-    translated: SubtitleSegment[],
-  ): SubtitleSegment[] {
+  private findMissingTranslations(translated: SubtitleSegment[]): SubtitleSegment[] {
     return translated.filter((subtitle) => !subtitle.text || subtitle.text.trim().length === 0);
   }
 
@@ -209,7 +198,7 @@ export class TranslationService {
       );
     }
 
-    const missing = this.findMissingTranslations(original, translated);
+    const missing = this.findMissingTranslations(translated);
 
     if (missing.length > 0) {
       throw new Error(

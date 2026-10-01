@@ -1,31 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { existsSync } from 'fs';
 import { mkdir, unlink } from 'fs/promises';
 import { join } from 'path';
 
 @Injectable()
-export class StorageService {
+export class StorageService implements OnModuleInit {
   private readonly storageDir = join(process.cwd(), 'storage');
-  private readonly uploadsDir = join(this.storageDir, 'uploads');
-  private readonly audioDir = join(this.storageDir, 'audio');
-  private readonly transcriptsDir = join(this.storageDir, 'transcripts');
-  private readonly subtitlesDir = join(this.storageDir, 'subtitles');
+  private readonly tempDir = join(this.storageDir, 'temp');
+  private readonly uploadsDir = join(this.tempDir, 'uploads');
+  private readonly audioDir = join(this.tempDir, 'audio');
+  private readonly transcriptsDir = join(this.tempDir, 'transcripts');
+  private readonly subtitlesDir = join(this.tempDir, 'subtitles');
   private readonly videosDir = join(this.storageDir, 'videos');
 
-  async ensureDirectories(): Promise<void> {
+  async onModuleInit() {
+    await this.initialize();
+  }
+
+  async initialize(): Promise<void> {
     await Promise.all([
       mkdir(this.uploadsDir, {
         recursive: true,
       }),
+
       mkdir(this.audioDir, {
         recursive: true,
       }),
+
       mkdir(this.transcriptsDir, {
         recursive: true,
       }),
+
       mkdir(this.subtitlesDir, {
         recursive: true,
       }),
+
       mkdir(this.videosDir, {
         recursive: true,
       }),

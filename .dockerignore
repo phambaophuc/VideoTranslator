@@ -5,10 +5,7 @@ dist
 
 .env
 
-storage/uploads/*
-storage/audio/*
-storage/transcripts/*
-storage/subtitles/*
+storage/temp/*
 storage/videos/*
 
 npm-debug.log

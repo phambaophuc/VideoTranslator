@@ -22,10 +22,10 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
 RUN mkdir -p \
-    storage/uploads \
-    storage/audio \
-    storage/transcripts \
-    storage/subtitles \
-    storage/videos
+    /app/storage/temp/uploads \
+    /app/storage/temp/audio \
+    /app/storage/temp/transcripts \
+    /app/storage/temp/subtitles \
+    /app/storage/videos
 EXPOSE 3000
 CMD ["node", "dist/main.js"]

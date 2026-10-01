@@ -29,7 +29,7 @@ export class VideosController {
   @Post()
   @UseInterceptors(
     FileInterceptor('video', {
-      dest: './storage/uploads',
+      dest: './storage/temp/uploads',
     }),
   )
   async uploadVideo(@UploadedFile() file: Express.Multer.File) {

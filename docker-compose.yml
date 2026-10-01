@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: phambaophuc/video-translator
+    container_name: video-translator
     ports:
       - '3000:3000'
     environment:
@@ -14,7 +14,8 @@ services:
     depends_on:
       - redis
     volumes:
-      - ./storage:/app/storage
+      - ./storage/videos:/app/storage/videos
+      - ./storage/temp:/app/storage/temp
     restart: unless-stopped
 
   redis:

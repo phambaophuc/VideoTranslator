@@ -31,7 +31,6 @@ export class TranscriptionProcessor extends WorkerHost {
     }
 
     const { videoId, filePath } = job.data;
-    await this.storageService.ensureDirectories();
 
     const audioPath = this.storageService.getAudioPath(videoId);
     const transcriptPath = this.storageService.getTranscriptPath(videoId);

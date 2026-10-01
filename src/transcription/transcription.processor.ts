@@ -57,7 +57,9 @@ export class TranscriptionProcessor extends WorkerHost {
       await job.updateProgress(transcribingProgress);
       this.videoProgressService.publish(videoId, transcribingProgress);
 
-      const transcript = await this.transcriptionService.transcribe(audioPath);
+      const { path: speechAudioPath, offset } =
+        await this.mediaService.trimLeadingSilence(audioPath);
+      const transcript = await this.transcriptionService.transcribe(speechAudioPath, offset);
       const preparingSubtitlesProgress = {
         progress: 50,
         step: 'preparing_subtitles' as const,

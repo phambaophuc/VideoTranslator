@@ -18,5 +18,8 @@ export interface WhisperSegment {
 
 export interface WhisperTranscription {
   text: string;
+  language?: string;
+  duration?: number;
+  words?: WhisperWord[];
   segments: WhisperSegment[];
 }

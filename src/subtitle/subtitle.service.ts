@@ -219,7 +219,26 @@ export class SubtitleService {
       return [{ text, start: word.start, end: Math.max(word.end, word.start) }];
     });
 
-    return fromWords.length > 0 ? fromWords : this.tokensFromText(segment);
+    return fromWords.length > 0
+      ? this.fixStretchedLeadingWords(fromWords)
+      : this.tokensFromText(segment);
+  }
+
+  private fixStretchedLeadingWords(tokens: Token[]): Token[] {
+    const maxDur = (t: Token) => 0.6 + textLength(t.text) * 0.12;
+    const estDur = (t: Token) => Math.min(0.2 + textLength(t.text) * 0.06, maxDur(t));
+
+    const firstGood = tokens.findIndex((t) => t.end - t.start <= maxDur(t));
+    if (firstGood <= 0) return tokens;
+
+    const out = [...tokens];
+    let end = tokens[firstGood].start;
+    for (let i = firstGood - 1; i >= 0; i--) {
+      const start = Math.max(tokens[i].start, end - estDur(tokens[i]));
+      out[i] = { ...tokens[i], start, end };
+      end = start;
+    }
+    return out;
   }
 
   private tokensFromText(segment: WhisperSegment): Token[] {

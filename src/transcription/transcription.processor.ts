@@ -11,7 +11,7 @@ import { VideoRenderService } from '../video-render/video-render.service';
 import { VideoProgressService } from '../videos/video-progress.service';
 import { TranscriptionService } from './transcription.service';
 
-@Processor('transcription')
+@Processor('transcription', { concurrency: 1 })
 export class TranscriptionProcessor extends WorkerHost {
   constructor(
     private readonly mediaService: MediaService,

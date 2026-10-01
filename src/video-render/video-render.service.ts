@@ -25,10 +25,13 @@ export class VideoRenderService {
           'libx264',
 
           '-preset',
-          'medium',
+          'veryfast',
 
           '-crf',
           '23',
+
+          '-threads',
+          '2',
 
           '-c:a',
           'copy',

@@ -2,6 +2,7 @@ import 'multer';
 
 import {
   BadRequestException,
+  Body,
   Controller,
   Get,
   MessageEvent,
@@ -32,12 +33,15 @@ export class VideosController {
       dest: './storage/temp/uploads',
     }),
   )
-  async uploadVideo(@UploadedFile() file: Express.Multer.File) {
+  async uploadVideo(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('language') targetLanguage?: string,
+  ) {
     if (!file) {
       throw new BadRequestException('Video file is required');
     }
 
-    return this.videosService.create(file);
+    return this.videosService.create(file, targetLanguage);
   }
 
   @Get(':videoId')

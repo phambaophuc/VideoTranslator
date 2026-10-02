@@ -1,12 +1,17 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
-import { rename } from 'fs/promises';
+import { rename, unlink } from 'fs/promises';
 import { extname } from 'path';
 
 import { StorageService } from '../storage/storage.service';
+import {
+  DEFAULT_LANGUAGE,
+  isSupportedLanguage,
+  SUPPORTED_LANGUAGES,
+} from '../translation/supported-languages';
 import { VideoJobStore } from './video-job.store';
 
 @Injectable()
@@ -18,7 +23,15 @@ export class VideosService {
     private readonly storageService: StorageService,
   ) {}
 
-  async create(file: Express.Multer.File) {
+  async create(file: Express.Multer.File, targetLanguage?: string) {
+    const language = (targetLanguage?.trim() || DEFAULT_LANGUAGE).toLowerCase();
+    if (!isSupportedLanguage(language)) {
+      await unlink(file.path).catch(() => undefined);
+      throw new BadRequestException(
+        `Unsupported language. Supported: ${Object.keys(SUPPORTED_LANGUAGES).join(', ')}`,
+      );
+    }
+
     const videoId = randomUUID();
     const extension = extname(file.originalname) || '.mp4';
     const uploadPath = this.storageService.getUploadPath(videoId, extension);
@@ -29,6 +42,7 @@ export class VideosService {
       videoId,
       filePath: uploadPath,
       originalName: file.originalname,
+      targetLanguage,
     });
 
     this.videoJobStore.set(videoId, String(job.id));
@@ -37,6 +51,7 @@ export class VideosService {
       videoId,
       jobId: job.id,
       status: 'queued',
+      targetLanguage,
     };
   }
 

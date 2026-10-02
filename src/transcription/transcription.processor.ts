@@ -30,7 +30,11 @@ export class TranscriptionProcessor extends WorkerHost {
       return;
     }
 
-    const { videoId, filePath } = job.data;
+    const { videoId, filePath, targetLanguage } = job.data as {
+      videoId: string;
+      filePath: string;
+      targetLanguage: string;
+    };
 
     const audioPath = this.storageService.getAudioPath(videoId);
     const transcriptPath = this.storageService.getTranscriptPath(videoId);
@@ -77,7 +81,10 @@ export class TranscriptionProcessor extends WorkerHost {
       };
       await job.updateProgress(translatingProgress);
       this.videoProgressService.publish(videoId, translatingProgress);
-      const translatedUnits = await this.translationService.translateBatch(translationUnits);
+      const translatedUnits = await this.translationService.translateBatch(
+        translationUnits,
+        targetLanguage,
+      );
 
       const translatedSubtitles = this.subtitleService.finalizeTranslatedSegments(
         translationUnits,

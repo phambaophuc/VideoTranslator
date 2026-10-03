@@ -1,7 +1,6 @@
 import 'multer';
 
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -13,10 +12,11 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { createReadStream } from 'fs';
 import { concat, map, Observable, of } from 'rxjs';
 
+import { VideoUploadInterceptor } from '../interceptors/video-upload.interceptor';
+import { validateVideoFile } from './validations/video-upload.validation';
 import { VideoProgressService } from './video-progress.service';
 import { VideosService } from './videos.service';
 
@@ -28,18 +28,12 @@ export class VideosController {
   ) {}
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('video', {
-      dest: './storage/temp/uploads',
-    }),
-  )
+  @UseInterceptors(VideoUploadInterceptor)
   async uploadVideo(
     @UploadedFile() file: Express.Multer.File,
     @Body('language') targetLanguage?: string,
   ) {
-    if (!file) {
-      throw new BadRequestException('Video file is required');
-    }
+    validateVideoFile(file);
 
     return this.videosService.create(file, targetLanguage);
   }

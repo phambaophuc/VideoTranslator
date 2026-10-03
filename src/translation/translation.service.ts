@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import Groq from 'groq-sdk';
 
-import { SubtitleSegment } from '../subtitle/subtitle.types';
+import { SubtitleSegment } from '../subtitle/types/subtitle.types';
 
 @Injectable()
 export class TranslationService {

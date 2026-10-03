@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { WhisperSegment } from '../transcription/transcription.types';
-import { SubtitleOptions, SubtitleSegment } from './subtitle.types';
+import { WhisperSegment } from '../transcription/types/transcription.types';
+import { SubtitleOptions, SubtitleSegment } from './types/subtitle.types';
 
 interface Token {
   text: string;

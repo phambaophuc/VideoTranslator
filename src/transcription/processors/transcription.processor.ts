@@ -3,13 +3,13 @@ import { Job } from 'bullmq';
 import { mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
 
-import { MediaService } from '../media/media.service';
-import { StorageService } from '../storage/storage.service';
-import { SubtitleService } from '../subtitle/subtitle.service';
-import { TranslationService } from '../translation/translation.service';
-import { VideoRenderService } from '../video-render/video-render.service';
-import { VideoProgressService } from '../videos/video-progress.service';
-import { TranscriptionService } from './transcription.service';
+import { MediaService } from '../../media/media.service';
+import { StorageService } from '../../storage/storage.service';
+import { SubtitleService } from '../../subtitle/subtitle.service';
+import { TranslationService } from '../../translation/translation.service';
+import { VideoRenderService } from '../../video-render/video-render.service';
+import { VideoProgressService } from '../../videos/video-progress.service';
+import { TranscriptionService } from '../transcription.service';
 
 @Processor('transcription', { concurrency: 1 })
 export class TranscriptionProcessor extends WorkerHost {

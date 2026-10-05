@@ -12,6 +12,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { createReadStream } from 'fs';
 import { concat, map, Observable, of } from 'rxjs';
 
@@ -27,6 +28,12 @@ export class VideosController {
     private readonly videoProgressService: VideoProgressService,
   ) {}
 
+  @Throttle({
+    default: {
+      limit: 5,
+      ttl: 10 * 60 * 1000,
+    },
+  })
   @Post()
   @UseInterceptors(VideoUploadInterceptor)
   async uploadVideo(
@@ -59,6 +66,7 @@ export class VideosController {
     });
   }
 
+  @SkipThrottle()
   @Sse(':videoId/events')
   events(@Param('videoId') videoId: string): Observable<MessageEvent> {
     const latest = this.videoProgressService.getLatest(videoId);

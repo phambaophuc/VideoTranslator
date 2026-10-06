@@ -4,16 +4,20 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   MessageEvent,
+  NotFoundException,
   Param,
   Post,
+  Req,
+  Res,
   Sse,
-  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
-import { createReadStream } from 'fs';
+import type { Request, Response } from 'express';
+import { createReadStream, statSync } from 'fs';
 import { concat, map, Observable, of } from 'rxjs';
 
 import { VideoUploadInterceptor } from '../interceptors/video-upload.interceptor';
@@ -56,14 +60,50 @@ export class VideosController {
   }
 
   @Get(':videoId/video')
-  getVideoFile(@Param('videoId') videoId: string): StreamableFile {
+  getVideoFile(@Param('videoId') videoId: string, @Req() req: Request, @Res() res: Response) {
     const videoPath = this.videosService.getVideoFile(videoId);
-    const stream = createReadStream(videoPath);
 
-    return new StreamableFile(stream, {
-      type: 'video/mp4',
-      disposition: 'inline',
+    let fileSize: number;
+    try {
+      fileSize = statSync(videoPath).size;
+    } catch {
+      throw new NotFoundException('Video not found');
+    }
+
+    const range = req.headers.range;
+    if (!range) {
+      res.writeHead(HttpStatus.OK, {
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+        'Accept-Ranges': 'bytes',
+      });
+      createReadStream(videoPath).pipe(res);
+      return;
+    }
+
+    const [startStr, endStr] = range.replace(/bytes=/, '').split('-');
+    const start = parseInt(startStr, 10);
+    const end = endStr ? parseInt(endStr, 10) : fileSize - 1;
+
+    if (isNaN(start) || start >= fileSize || end >= fileSize || start > end) {
+      res.writeHead(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE, {
+        'Content-Range': `bytes */${fileSize}`,
+      });
+      res.end();
+      return;
+    }
+
+    const chunkSize = end - start + 1;
+
+    res.writeHead(HttpStatus.PARTIAL_CONTENT, {
+      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': chunkSize,
+      'Content-Type': 'video/mp4',
     });
+
+    const stream = createReadStream(videoPath, { start, end });
+    stream.pipe(res);
   }
 
   @SkipThrottle()
